@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Leave a tip — Unhappy Hiker Photography</title>
+    <style>
+        :root {
+            --bg: #f6f6f5;
+            --card: #ffffff;
+            --accent: #1279BE
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            font-family: Inter, Arial, Helvetica, sans-serif
+        }
+
+        .tablet {
+            width: min(720px, 92vw);
+            aspect-ratio: 1/1;
+            background: var(--card);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            gap: 1.25rem
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            margin: 0;
+            color: #111
+        }
+
+        p.lead {
+            color: #444;
+            margin: .25rem 0 1rem
+        }
+
+        .choices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            width: 100%
+        }
+
+        .tip-btn {
+            flex: 1 1 30%;
+            min-width: 160px;
+            height: 96px;
+            background: linear-gradient(180deg, var(--accent), #0f5fa3);
+            color: #fff;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer
+        }
+
+        .tip-btn[data-selected="true"] {
+            outline: 6px solid rgba(18, 121, 190, .12)
+        }
+
+        .custom {
+            display: flex;
+            gap: .5rem;
+            align-items: center
+        }
+
+        .custom input {
+            width: 110px;
+            font-size: 1.5rem;
+            padding: .5rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: right
+        }
+
+        footer {
+            margin-top: .5rem;
+            color: #666;
+            font-size: .9rem
+        }
+
+        @media (max-width:520px) {
+            .tip-btn {
+                min-width: 120px;
+                height: 76px;
+                font-size: 1.25rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="tablet" role="main" aria-labelledby="title">
+        <h1 id="title">Leave a tip</h1>
+        <p class="lead">Tap an amount</p>
+        <p class="lead">You pay their wage so we don't have to</p>
+        <div class="choices" role="list">
+            <button class="tip-btn" data-percent="22">22%</button>
+            <button class="tip-btn" data-percent="30">30%</button>
+            <button class="tip-btn" data-percent="40">40%</button>
+            <div class="custom">
+                <label for="customPercent" class="hide-visually">Custom percent</label>
+                <input id="customPercent" type="number" min="1" max="100" placeholder="Custom%"
+                    aria-label="Custom percent" />
+            </div>
+        </div>
+        <div id="selected" aria-live="polite" style="margin-top:1rem;color:#333;font-weight:600">Selected: —</div>
+        <footer> Unhappy Hiker </footer>
+    </main>
+
+    <script>
+        const buttons = document.querySelectorAll('.tip-btn');
+        const selected = document.getElementById('selected');
+        const custom = document.getElementById('customPercent');
+        // Put the URL you want to redirect to when the user types 69 here:
+        // Example: const redirect69 = 'https://example.com/your-target';
+        const redirect69 = 'https://media.tenor.com/-7n4_-q2bgEAAAAe/emoji-staring-from-the-dark.png';
+        // Configure a number below 22 and a URL to redirect when the user types that number.
+        // Example: const redirectBelowNumber = 13; const redirectBelowUrl = 'https://example.com/target13';
+        const redirectBelowNumber = 1; // set to 0 to disable
+        const redirectBelowUrl = 'https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2F6gxv62p0k6351.jpg%3Fwidth%3D640%26crop%3Dsmart%26auto%3Dwebp%26s%3D99cb67837078d51d0f2be916e1216570bf987614';
+        // Set the URL the highest preset (40%) should redirect to when clicked.
+        // Example: const redirectHighest = 'https://example.com/thank-you';
+        const redirectHighest = 'https://c.tenor.com/13VLGDumHu8AAAAC/tenor.gif';
+
+        function clearSelected() {
+            buttons.forEach(b => b.dataset.selected = 'false');
+            selected.style.color = '#333';
+        }
+
+        buttons.forEach(b => {
+            b.addEventListener('click', () => {
+                clearSelected();
+                const p = parseInt(b.dataset.percent, 10);
+                // First two options: show a notification that selection is too low
+                if (p === 22 || p === 30) {
+                    selected.style.color = 'crimson';
+                    selected.textContent = 'Selection too low';
+                    return;
+                }
+                // Highest preset: redirect to configured URL if set
+                if (p === 40) {
+                    if (redirectHighest && redirectHighest.trim().length) {
+                        window.location.href = redirectHighest;
+                        return;
+                    }
+                }
+                b.dataset.selected = 'true';
+                selected.textContent = `Selected: ${b.dataset.percent}`;
+            })
+        })
+
+        custom.addEventListener('input', () => {
+            clearSelected();
+            const n = parseInt(custom.value, 10);
+            const v = custom.value ? custom.value + '%' : '—';
+            selected.textContent = `Selected: ${v}`;
+            if (n === 67) {
+                // Redirect to Rick Astley when user types 67
+                window.location.href = 'https://rickroll.it/rickroll.mp4';
+            }
+            if (n === 69) {
+                // Redirect to the configured URL when user types 69 (if set)
+                if (redirect69 && redirect69.trim().length) {
+                    // Open in same tab; if you prefer a new tab change to window.open(redirect69, '_blank')
+                    window.location.href = redirect69;
+                }
+            }
+            if (n < 22 && redirectBelowNumber && n === redirectBelowNumber) {
+                if (redirectBelowUrl && redirectBelowUrl.trim().length) {
+                    window.location.href = redirectBelowUrl;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
