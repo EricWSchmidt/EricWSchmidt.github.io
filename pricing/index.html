@@ -123,76 +123,133 @@
                 <label for="customPercent" class="hide-visually">Custom percent</label>
                 <input id="customPercent" type="number" min="1" max="100" placeholder="Custom%"
                     aria-label="Custom percent" />
+                <button id="customSubmit" type="button"
+                    style="margin-left:.5rem;padding:.5rem 1rem;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer">Submit</button>
             </div>
         </div>
         <div id="selected" aria-live="polite" style="margin-top:1rem;color:#333;font-weight:600">Selected: —</div>
-        <footer> Unhappy Hiker </footer>
+        <footer> Unhappy Hiker LLC TM Co. Closed-captioning</footer>
     </main>
 
     <script>
-        const buttons = document.querySelectorAll('.tip-btn');
-        const selected = document.getElementById('selected');
-        const custom = document.getElementById('customPercent');
-        // Put the URL you want to redirect to when the user types 69 here:
-        // Example: const redirect69 = 'https://example.com/your-target';
-        const redirect69 = 'https://media.tenor.com/-7n4_-q2bgEAAAAe/emoji-staring-from-the-dark.png';
-        // Configure a number below 22 and a URL to redirect when the user types that number.
-        // Example: const redirectBelowNumber = 13; const redirectBelowUrl = 'https://example.com/target13';
-        const redirectBelowNumber = 1; // set to 0 to disable
-        const redirectBelowUrl = 'https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2F6gxv62p0k6351.jpg%3Fwidth%3D640%26crop%3Dsmart%26auto%3Dwebp%26s%3D99cb67837078d51d0f2be916e1216570bf987614';
-        // Set the URL the highest preset (40%) should redirect to when clicked.
-        // Example: const redirectHighest = 'https://example.com/thank-you';
-        const redirectHighest = 'https://c.tenor.com/13VLGDumHu8AAAAC/tenor.gif';
+        function initPricingScript() {
+            console.log('pricing script init');
+            const buttons = document.querySelectorAll('.tip-btn');
+            const selected = document.getElementById('selected');
+            const custom = document.getElementById('customPercent');
+            // Put the URL you want to redirect to when the user types 69 here:
+            // Example: const redirect69 = 'https://example.com/your-target';
+            const redirect69 = 'https://media.tenor.com/-7n4_-q2bgEAAAAe/emoji-staring-from-the-dark.png';
+            // (below-22 redirect removed)
+            // Set the URL the highest preset (40%) should redirect to when clicked.
+            // Example: const redirectHighest = 'https://example.com/thank-you';
+            const redirectHighest = 'https://c.tenor.com/13VLGDumHu8AAAAC/tenor.gif';
 
-        function clearSelected() {
-            buttons.forEach(b => b.dataset.selected = 'false');
-            selected.style.color = '#333';
-        }
+            function clearSelected() {
+                buttons.forEach(b => b.dataset.selected = 'false');
+                selected.style.color = '#333';
+            }
 
-        buttons.forEach(b => {
-            b.addEventListener('click', () => {
+            buttons.forEach(b => {
+                b.addEventListener('click', () => {
+                    clearSelected();
+                    const p = parseInt(b.dataset.percent, 10);
+                    // First two options: show a notification that selection is too low
+                    if (p === 22 || p === 30) {
+                        selected.style.color = 'crimson';
+                        selected.textContent = 'Selection too low';
+                        return;
+                    }
+                    // Highest preset: redirect to configured URL if set
+                    if (p === 40) {
+                        if (redirectHighest && redirectHighest.trim().length) {
+                            window.location.href = redirectHighest;
+                            return;
+                        }
+                    }
+                    b.dataset.selected = 'true';
+                    selected.textContent = `Selected: ${b.dataset.percent}`;
+                })
+            })
+
+            // Update selected display as the user types, but only perform redirects on submit
+            custom.addEventListener('input', () => {
                 clearSelected();
-                const p = parseInt(b.dataset.percent, 10);
-                // First two options: show a notification that selection is too low
-                if (p === 22 || p === 30) {
-                    selected.style.color = 'crimson';
-                    selected.textContent = 'Selection too low';
+                const v = custom.value ? custom.value + '%' : '—';
+                selected.textContent = `Selected: ${v}`;
+            })
+
+            const customSubmit = document.getElementById('customSubmit');
+            if (customSubmit && !customSubmit.dataset.orig) customSubmit.dataset.orig = customSubmit.textContent;
+            function handleCustomSubmit() {
+                console.log('custom submit clicked, value=', custom.value);
+                const n = parseInt(custom.value, 10);
+                if (Number.isNaN(n)) return;
+                // provide immediate feedback
+                customSubmit.disabled = true;
+                const oldText = customSubmit.textContent;
+                customSubmit.textContent = 'Submitting...';
+                // perform the same redirect rules, but only when user submits
+                if (n === 67) {
+                    window.location.href = 'https://rickroll.it/rickroll.mp4';
                     return;
                 }
-                // Highest preset: redirect to configured URL if set
-                if (p === 40) {
-                    if (redirectHighest && redirectHighest.trim().length) {
-                        window.location.href = redirectHighest;
+                if (n === 69 || n === 420) {
+                    if (redirect69 && redirect69.trim().length) {
+                        window.location.href = redirect69;
                         return;
                     }
                 }
-                b.dataset.selected = 'true';
-                selected.textContent = `Selected: ${b.dataset.percent}`;
-            })
-        })
+                if (n === 0) {
+                    window.location.href = 'https://c.tenor.com/CwWdbZ03o98AAAAC/tenor.gif';
+                    return;
+                }
+                if (n === 100) {
+                    window.location.href = 'https://c.tenor.com/39pkNefFyyYAAAAd/tenor.gif';
+                    return;
+                }
 
-        custom.addEventListener('input', () => {
-            clearSelected();
-            const n = parseInt(custom.value, 10);
-            const v = custom.value ? custom.value + '%' : '—';
-            selected.textContent = `Selected: ${v}`;
-            if (n === 67) {
-                // Redirect to Rick Astley when user types 67
-                window.location.href = 'https://rickroll.it/rickroll.mp4';
+                // otherwise show a random tipping-culture phrase (no redirect)
+                const tippingPhrases = [
+                    'Tipping rewards great service and personal attention.',
+                    'Tipping helps service workers earn a living wage beyond base pay.',
+                    'Tipping encourages friendly, attentive interactions.',
+                    'Tipping lets customers directly reward exceptional effort.',
+                    'Tipping supports flexible, performance-based income.',
+                    'Tipping builds a culture of gratitude and reciprocity.',
+                    'Servers rely on tips for stable household income.',
+                    'Tipping can boost morale and service quality.',
+                    'Tipping creates immediate feedback between guest and host.',
+                    'Tipping helps small businesses keep prices competitive.',
+                    'Tipping allows for personal appreciation of memorable moments.',
+                    'Tipping fills gaps where wages haven’t kept pace.',
+                    'Generous tips often drive better long-term care.',
+                    'Tipping encourages pride in workmanship and hospitality.',
+                    'Tipping lets patrons participate in local economies directly.'
+                ];
+                const phrase = tippingPhrases[Math.floor(Math.random() * tippingPhrases.length)];
+                selected.style.color = '#333';
+                selected.textContent = phrase;
+                // restore button
+                customSubmit.disabled = false;
+                customSubmit.textContent = oldText;
             }
-            if (n === 69) {
-                // Redirect to the configured URL when user types 69 (if set)
-                if (redirect69 && redirect69.trim().length) {
-                    // Open in same tab; if you prefer a new tab change to window.open(redirect69, '_blank')
-                    window.location.href = redirect69;
-                }
-            }
-            if (n < 22 && redirectBelowNumber && n === redirectBelowNumber) {
-                if (redirectBelowUrl && redirectBelowUrl.trim().length) {
-                    window.location.href = redirectBelowUrl;
-                }
-            }
-        })
+            if (customSubmit) customSubmit.addEventListener('click', handleCustomSubmit);
+            // submit on Enter
+            custom.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleCustomSubmit(); });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPricingScript);
+        } else {
+            initPricingScript();
+        }
+        // Reset submit button state when navigating back (bfcache / pageshow)
+        window.addEventListener('pageshow', () => {
+            const btn = document.getElementById('customSubmit');
+            if (!btn) return;
+            btn.disabled = false;
+            btn.textContent = btn.dataset.orig || 'Submit';
+        });
     </script>
 </body>
 
